@@ -2,9 +2,9 @@ package com.franconeta.ferreteria.service.impl;
 
 import com.franconeta.ferreteria.model.Category;
 import com.franconeta.ferreteria.model.Product;
-import com.franconeta.ferreteria.repository.ProductoRepository;
+import com.franconeta.ferreteria.repository.ProductRepository;
 import com.franconeta.ferreteria.service.ICategoryService;
-import com.franconeta.ferreteria.service.IProductoService;
+import com.franconeta.ferreteria.service.IProductService;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,21 +14,21 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class ProductoServiceImpl implements IProductoService {
+public class ProductServiceImpl implements IProductService {
 
      @Autowired
-     private ProductoRepository productoRepository;
+     private ProductRepository productRepository;
      @Autowired
      private ICategoryService categoryService;
 
      @Override
      public Product createProduct(Product p) {
-          if (productoRepository.existsByName(p.getName().toUpperCase())) {
+          if (productRepository.existsByName(p.getName().toUpperCase())) {
                throw new EntityExistsException("El producto " + p.getName() + " ya existe");
           }
           Category categoryToAssign = categoryService.findCategoryById(p.getCategory().getId()); // --> puede saltar una EntityNotFoundException
           p.setCategory(categoryToAssign);
-          return productoRepository.save(p);
+          return productRepository.save(p);
      }
 
      @Override
@@ -38,12 +38,12 @@ public class ProductoServiceImpl implements IProductoService {
 
      @Override
      public List<Product> findAllProducts() {
-          return productoRepository.findAll();
+          return productRepository.findAll();
      }
 
      @Override
      public Product findProductById(Long id) {
-          Optional<Product> productOpt = productoRepository.findById(id);
+          Optional<Product> productOpt = productRepository.findById(id);
           if (productOpt.isPresent()) {
                return productOpt.get();
           }
@@ -53,7 +53,7 @@ public class ProductoServiceImpl implements IProductoService {
      @Override
      public void deleteProductById(Long id) {
           findProductById(id);
-          productoRepository.deleteById(id);
+          productRepository.deleteById(id);
      }
 
 //     public Product addProductToCategory(Product p) {

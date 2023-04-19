@@ -4,7 +4,7 @@ import com.franconeta.ferreteria.model.Product;
 
 import java.util.List;
 
-public interface IProductoService {
+public interface IProductService {
      Product createProduct(Product p);
      Product updateProduct(Product p);
      List<Product> findAllProducts();

@@ -1,7 +1,7 @@
 package com.franconeta.ferreteria.controller;
 
 import com.franconeta.ferreteria.model.Product;
-import com.franconeta.ferreteria.service.IProductoService;
+import com.franconeta.ferreteria.service.IProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,9 +11,9 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/product")
-public class ProductoController {
+public class ProductController {
      @Autowired
-     private IProductoService productoService;
+     private IProductService productoService;
 
      @PostMapping
      public ResponseEntity<Product> createProduct(@RequestBody Product p) {

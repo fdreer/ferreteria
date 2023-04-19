@@ -2,7 +2,6 @@ package com.franconeta.ferreteria.controller;
 
 import com.franconeta.ferreteria.model.Category;
 import com.franconeta.ferreteria.service.ICategoryService;
-import jakarta.persistence.EntityExistsException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,7 +11,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/category")
-public class CategoriaController {
+public class CategoryController {
 
      @Autowired
      private ICategoryService categoryService;
