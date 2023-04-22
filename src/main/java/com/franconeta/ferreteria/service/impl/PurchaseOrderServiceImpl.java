@@ -47,6 +47,14 @@ public class PurchaseOrderServiceImpl implements IPurchaseOrderService {
      }
 
      @Override
+     public PurchaseOrder addProductToPurchaseOrder(String purchaseOrderId, String purchaseProductId) {
+          PurchaseOrder purchaseOrder = findPurchaseOrderById(Long.parseLong(purchaseOrderId));
+          PurchaseProduct purchaseProduct = purchaseProductService.findPurchaseProductById(Long.parseLong(purchaseProductId));
+          purchaseOrder.getPurchaseProducts().add(purchaseProduct);
+          return purchaseOrderRepository.save(purchaseOrder);
+     }
+
+     @Override
      public List<PurchaseOrder> findAllPurchaseOrders() {
           return purchaseOrderRepository.findAll();
      }

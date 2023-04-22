@@ -39,6 +39,15 @@ public class PurchaseOrderController {
           return new ResponseEntity<>(purchaseOrder, HttpStatus.OK);
      }
 
+     @PutMapping("/add-product")
+     public ResponseEntity<PurchaseOrder> addProductToPurchaseOrder (
+             @RequestParam String purchaseOrderId,
+             @RequestParam String purchaseProductId) {
+          PurchaseOrder purchaseOrder = purchaseOrderService.addProductToPurchaseOrder(purchaseOrderId, purchaseProductId);
+          return new ResponseEntity<>(purchaseOrder, HttpStatus.OK);
+     }
+
+
      @DeleteMapping("/{id}")
      public ResponseEntity<?> deletePurchaseOrder(@PathVariable Long id) {
           purchaseOrderService.deletePurchaseOrderById(id);
