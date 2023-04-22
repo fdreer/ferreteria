@@ -55,9 +55,4 @@ public class ProductServiceImpl implements IProductService {
           findProductById(id);
           productRepository.deleteById(id);
      }
-
-//     public Product addProductToCategory(Product p) {
-//          Product product = findProductById(p.getId());
-//          Category category = categoryService.findCategoryById(p.getCategory().getId());
-//     }
 }
