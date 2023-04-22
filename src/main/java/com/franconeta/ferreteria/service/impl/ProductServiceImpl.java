@@ -21,11 +21,15 @@ public class ProductServiceImpl implements IProductService {
      @Autowired
      private ICategoryService categoryService;
 
+     public void productExistsByName (String name) {
+          if (productRepository.existsByName(name.toUpperCase())) {
+               throw new EntityExistsException("El producto " + name + " ya existe");
+          }
+     }
+
      @Override
      public Product createProduct(Product p) {
-          if (productRepository.existsByName(p.getName().toUpperCase())) {
-               throw new EntityExistsException("El producto " + p.getName() + " ya existe");
-          }
+          productExistsByName(p.getName());
           Category categoryToAssign = categoryService.findCategoryById(p.getCategory().getId()); // --> puede saltar una EntityNotFoundException
           p.setCategory(categoryToAssign);
           return productRepository.save(p);
