@@ -29,15 +29,19 @@ public class ProductServiceImpl implements IProductService {
 
      @Override
      public Product createProduct(Product p) {
-          productExistsByName(p.getName());
-          Category categoryToAssign = categoryService.findCategoryById(p.getCategory().getId()); // --> puede saltar una EntityNotFoundException
+          productExistsByName(p.getName());  // --> puede lanzar una EntityExistsException
+          Category categoryToAssign = categoryService.findCategoryById(p.getCategory().getId()); // --> puede lanzar una EntityNotFoundException
           p.setCategory(categoryToAssign);
           return productRepository.save(p);
      }
 
      @Override
      public Product updateProduct(Product p) {
-          return createProduct(p);
+          productExistsByName(p.getName());  // --> puede lanzar una EntityExistsException
+          Long categoryToAssignId = p.getCategory().getId();
+          Category categoryToAssign = categoryService.findCategoryById(categoryToAssignId);
+          p.setCategory(categoryToAssign);
+          return productRepository.save(p);
      }
 
      @Override
