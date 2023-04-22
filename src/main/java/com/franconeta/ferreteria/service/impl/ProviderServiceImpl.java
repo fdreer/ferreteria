@@ -3,6 +3,7 @@ package com.franconeta.ferreteria.service.impl;
 import com.franconeta.ferreteria.model.Provider;
 import com.franconeta.ferreteria.repository.ProviderRepository;
 import com.franconeta.ferreteria.service.IProviderService;
+import jakarta.persistence.EntityExistsException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +18,9 @@ public class ProviderServiceImpl implements IProviderService {
 
      @Override
      public Provider createProvider(Provider p) {
+          if (providerRepository.existsByName(p.getName())) {
+               throw new EntityExistsException("El proveedor " + p.getName() + " ya existe");
+          }
           return providerRepository.save(p);
      }
 
