@@ -26,6 +26,4 @@ public class PurchaseOrder {
      @ManyToOne(cascade = CascadeType.ALL)
      @JoinColumn(name = "provider_id")
      private Provider provider;
-
-     private Boolean received;
 }

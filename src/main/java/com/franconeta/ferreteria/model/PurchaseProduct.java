@@ -21,4 +21,5 @@ public class PurchaseProduct {
 
      private Double price;
      private Integer units;
+     private Boolean received;
 }
