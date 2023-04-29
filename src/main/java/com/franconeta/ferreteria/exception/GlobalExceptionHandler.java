@@ -1,5 +1,6 @@
 package com.franconeta.ferreteria.exception;
 
+import com.franconeta.ferreteria.dto.APIExceptionResponse;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
@@ -14,7 +15,7 @@ import java.time.LocalDateTime;
 public class GlobalExceptionHandler {
      @ExceptionHandler(EntityExistsException.class)
      protected ResponseEntity<?> handleEntityExistsException(EntityExistsException ex, WebRequest request) {
-          return new ResponseEntity<>(ExceptionResponseDTO.builder()
+          return new ResponseEntity<>(APIExceptionResponse.builder()
                   .timestamp(LocalDateTime.now())
                   .status(HttpStatus.BAD_REQUEST.value())
                   .error(HttpStatus.BAD_REQUEST.getReasonPhrase())
@@ -24,7 +25,7 @@ public class GlobalExceptionHandler {
 
      @ExceptionHandler(EntityNotFoundException.class)
      protected ResponseEntity<?> handleEntityNotFoundException(EntityNotFoundException ex, WebRequest request) {
-          return new ResponseEntity<>(ExceptionResponseDTO.builder()
+          return new ResponseEntity<>(APIExceptionResponse.builder()
                   .timestamp(LocalDateTime.now())
                   .status(HttpStatus.NOT_FOUND.value())
                   .error(HttpStatus.NOT_FOUND.getReasonPhrase())
