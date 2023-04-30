@@ -1,6 +1,5 @@
 package com.franconeta.ferreteria.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -21,7 +20,5 @@ public class Provider {
      private String name;
 
      @OneToMany(mappedBy = "provider", cascade = CascadeType.ALL)
-     @JsonIgnore
      private Set<PurchaseOrder> purchaseOrders = new HashSet<>();
-
 }

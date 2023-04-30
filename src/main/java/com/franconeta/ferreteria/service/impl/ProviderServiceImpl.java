@@ -1,5 +1,6 @@
 package com.franconeta.ferreteria.service.impl;
 
+import com.franconeta.ferreteria.dto.ProviderDTO;
 import com.franconeta.ferreteria.model.Provider;
 import com.franconeta.ferreteria.repository.ProviderRepository;
 import com.franconeta.ferreteria.service.IProviderService;
@@ -9,39 +10,52 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ProviderServiceImpl implements IProviderService {
-
      @Autowired
      private ProviderRepository providerRepository;
 
-     @Override
-     public Provider createProvider(Provider p) {
-          if (providerRepository.existsByName(p.getName())) {
-               throw new EntityExistsException("El proveedor " + p.getName() + " ya existe");
-          }
-          return providerRepository.save(p);
+     private ProviderDTO convertToDTO(Provider provider) {
+          return new ProviderDTO(
+                  provider.getId(),
+                  provider.getName()
+          );
      }
 
      @Override
-     public Provider updateProvider(Provider p) {
+     public ProviderDTO createProvider(Provider p) {
+          if (providerRepository.existsByName(p.getName())) {
+               throw new EntityExistsException("El proveedor " + p.getName() + " ya existe");
+          }
+          Provider providerSave = providerRepository.save(p);
+          return convertToDTO(providerSave);
+     }
+
+     @Override
+     public ProviderDTO updateProvider(Provider p) {
           return createProvider(p);
      }
 
      @Override
-     public List<Provider> findAllProviders() {
-          return providerRepository.findAll();
+     public List<ProviderDTO> findAllProviders() {
+          return providerRepository.findAll()
+                  .stream().map(provider -> convertToDTO(provider))
+                  .collect(Collectors.toList());
      }
 
      @Override
-     public Provider findProviderById(Long id) {
-          Optional<Provider> providerOPT = providerRepository.findById(id);
-          if (providerOPT.isPresent()) {
-               return providerOPT.get();
-          }
-          throw new EntityNotFoundException("El proveedor con id " + id + " no existe");
+     public ProviderDTO findProviderById(Long id) {
+          return providerRepository.findById(id)
+                  .map(provider -> convertToDTO(provider))
+                  .orElseThrow(() -> new EntityNotFoundException("El proveedor con id " + id + " no existe"));
+     }
+
+     @Override
+     public Provider findProviderModelById(Long id) {
+          return providerRepository.findById(id)
+                  .orElseThrow(() -> new EntityNotFoundException("El proveedor con id " + id + " no existe"));
      }
 
      @Override

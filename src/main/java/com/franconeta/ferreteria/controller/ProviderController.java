@@ -1,5 +1,6 @@
 package com.franconeta.ferreteria.controller;
 
+import com.franconeta.ferreteria.dto.ProviderDTO;
 import com.franconeta.ferreteria.model.Provider;
 import com.franconeta.ferreteria.service.IProviderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,26 +18,26 @@ public class ProviderController {
      private IProviderService providerService;
 
      @PostMapping
-     public ResponseEntity<Provider> createProvider(@RequestBody Provider p) {
-          Provider provider = providerService.createProvider(p);
+     public ResponseEntity<ProviderDTO> createProvider(@RequestBody Provider p) {
+          ProviderDTO provider = providerService.createProvider(p);
           return new ResponseEntity<>(provider, HttpStatus.CREATED);
      }
 
      @GetMapping("/{id}")
-     public ResponseEntity<Provider> getProviderById(@PathVariable Long id) {
-          Provider provider = providerService.findProviderById(id);
+     public ResponseEntity<ProviderDTO> getProviderById(@PathVariable Long id) {
+          ProviderDTO provider = providerService.findProviderById(id);
           return new ResponseEntity<>(provider, HttpStatus.OK);
      }
 
      @GetMapping
-     public ResponseEntity<List<Provider>> getAllProviders() {
-          List<Provider> providerList = providerService.findAllProviders();
+     public ResponseEntity<List<ProviderDTO>> getAllProviders() {
+          List<ProviderDTO> providerList = providerService.findAllProviders();
           return new ResponseEntity<>(providerList, HttpStatus.OK);
      }
 
      @PutMapping
-     public ResponseEntity<Provider> updateProvider(@RequestBody Provider p) {
-          Provider provider = providerService.updateProvider(p);
+     public ResponseEntity<ProviderDTO> updateProvider(@RequestBody Provider p) {
+          ProviderDTO provider = providerService.updateProvider(p);
           return new ResponseEntity<>(provider, HttpStatus.OK);
      }
 
