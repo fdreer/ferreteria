@@ -1,13 +1,14 @@
 package com.franconeta.ferreteria.service;
 
+import com.franconeta.ferreteria.dto.ProductDTO;
 import com.franconeta.ferreteria.model.Product;
 
 import java.util.List;
 
 public interface IProductService {
-     Product createProduct(Product p);
-     Product updateProduct(Product p);
-     List<Product> findAllProducts();
-     Product findProductById(Long id);
+     ProductDTO createProduct(Product p);
+     ProductDTO updateProduct(Product p);
+     List<ProductDTO> findAllProducts();
+     ProductDTO findProductById(Long id);
      void deleteProductById(Long id);
 }

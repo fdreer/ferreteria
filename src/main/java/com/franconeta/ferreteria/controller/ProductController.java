@@ -1,5 +1,6 @@
 package com.franconeta.ferreteria.controller;
 
+import com.franconeta.ferreteria.dto.ProductDTO;
 import com.franconeta.ferreteria.model.Product;
 import com.franconeta.ferreteria.service.IProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,26 +17,26 @@ public class ProductController {
      private IProductService productoService;
 
      @PostMapping
-     public ResponseEntity<Product> createProduct(@RequestBody Product p) {
-          Product product = productoService.createProduct(p);
+     public ResponseEntity<ProductDTO> createProduct(@RequestBody Product p) {
+          ProductDTO product = productoService.createProduct(p);
           return new ResponseEntity<>(product, HttpStatus.CREATED);
      }
 
      @GetMapping("/{id}")
-     public ResponseEntity<Product> getProductById(@PathVariable Long id) {
-          Product product = productoService.findProductById(id);
+     public ResponseEntity<ProductDTO> getProductById(@PathVariable Long id) {
+          ProductDTO product = productoService.findProductById(id);
           return new ResponseEntity<>(product, HttpStatus.OK);
      }
 
      @GetMapping
-     public ResponseEntity<List<Product>> getAllProducts() {
-          List<Product> productList = productoService.findAllProducts();
+     public ResponseEntity<List<ProductDTO>> getAllProducts() {
+          List<ProductDTO> productList = productoService.findAllProducts();
           return new ResponseEntity<>(productList, HttpStatus.OK);
      }
 
      @PutMapping
-     public ResponseEntity<Product> updateProduct(@RequestBody Product p) {
-          Product product = productoService.updateProduct(p);
+     public ResponseEntity<ProductDTO> updateProduct(@RequestBody Product p) {
+          ProductDTO product = productoService.updateProduct(p);
           return new ResponseEntity<>(product, HttpStatus.OK);
      }
 

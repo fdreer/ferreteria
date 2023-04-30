@@ -1,5 +1,6 @@
 package com.franconeta.ferreteria.service.impl;
 
+import com.franconeta.ferreteria.dto.CategoryDTO;
 import com.franconeta.ferreteria.model.Category;
 import com.franconeta.ferreteria.repository.CategoryRepository;
 import com.franconeta.ferreteria.service.ICategoryService;
@@ -9,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class CategoryServiceImpl implements ICategoryService {
@@ -17,30 +18,45 @@ public class CategoryServiceImpl implements ICategoryService {
      @Autowired
      private CategoryRepository categoryRepository;
 
-     @Override
-     public Category createCategory(Category c) {
-          if (categoryRepository.existsByName(c.getName().toUpperCase())) {     // desde el front se crean las categorias con MAYUSCULAS
-               throw new EntityExistsException("La categoria " + c.getName() + " ya existe");
-          }
-          return categoryRepository.save(c);
+     private CategoryDTO convertToDTO(Category category) {
+          return new CategoryDTO(
+                  category.getId(),
+                  category.getName()
+          );
      }
 
      @Override
-     public Category updateCategory(Category c) {
+     public CategoryDTO createCategory(Category c) {
+          if (categoryRepository.existsByName(c.getName())) {
+               throw new EntityExistsException("La categoria " + c.getName() + " ya existe");
+          }
+          Category categorySave = categoryRepository.save(c);
+          return convertToDTO(categorySave);
+     }
+
+     @Override
+     public CategoryDTO updateCategory(Category c) {
           return createCategory(c);
      }
 
      @Override
-     public List<Category> findAllCategories() {
-          return categoryRepository.findAll();
+     public List<CategoryDTO> findAllCategories() {
+     return categoryRepository.findAll()
+             .stream().map(c -> convertToDTO(c))
+             .collect(Collectors.toList());
      }
 
      @Override
-     public Category findCategoryById(Long id) {
-          Optional<Category> categoryOpt = categoryRepository.findById(id);
+     public CategoryDTO findCategoryById(Long id) {
+          return categoryRepository.findById(id)
+                  .map(c -> convertToDTO(c))
+                  .orElseThrow(() -> new EntityNotFoundException("La categoria con id " + id + " no existe"));
+     }
 
-          if (categoryOpt.isPresent()) return categoryOpt.get();
-          throw new EntityNotFoundException("La categoria con id " + id + " no existe");
+     @Override
+     public Category findCategoryModelById(Long id) {
+          return categoryRepository.findById(id)
+                  .orElseThrow(() -> new EntityNotFoundException("La categoria con id " + id + " no existe"));
      }
 
      @Override

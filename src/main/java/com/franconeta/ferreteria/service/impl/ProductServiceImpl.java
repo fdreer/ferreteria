@@ -1,5 +1,6 @@
 package com.franconeta.ferreteria.service.impl;
 
+import com.franconeta.ferreteria.dto.ProductDTO;
 import com.franconeta.ferreteria.model.Category;
 import com.franconeta.ferreteria.model.Product;
 import com.franconeta.ferreteria.repository.ProductRepository;
@@ -11,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductServiceImpl implements IProductService {
@@ -21,41 +22,45 @@ public class ProductServiceImpl implements IProductService {
      @Autowired
      private ICategoryService categoryService;
 
-     public void productExistsByName (String name) {
+     private void productExistsByName (String name) {
           if (productRepository.existsByName(name.toUpperCase())) {
                throw new EntityExistsException("El producto " + name + " ya existe");
           }
      }
+     private ProductDTO convertToDTO(Product product) {
+          return new ProductDTO(
+                  product.getId(),
+                  product.getName(),
+                  product.getCategory().getName()
+          );
+     }
 
      @Override
-     public Product createProduct(Product p) {
+     public ProductDTO createProduct(Product p) {
           productExistsByName(p.getName());  // --> puede lanzar una EntityExistsException
-          Category categoryToAssign = categoryService.findCategoryById(p.getCategory().getId()); // --> puede lanzar una EntityNotFoundException
+          Category categoryToAssign = categoryService.findCategoryModelById(p.getCategory().getId());
           p.setCategory(categoryToAssign);
-          return productRepository.save(p);
+          Product productSave = productRepository.save(p);
+          return convertToDTO(productSave);
      }
 
      @Override
-     public Product updateProduct(Product p) {
-          productExistsByName(p.getName());  // --> puede lanzar una EntityExistsException
-          Long categoryToAssignId = p.getCategory().getId();
-          Category categoryToAssign = categoryService.findCategoryById(categoryToAssignId);
-          p.setCategory(categoryToAssign);
-          return productRepository.save(p);
+     public ProductDTO updateProduct(Product p) {
+          return createProduct(p);
      }
 
      @Override
-     public List<Product> findAllProducts() {
-          return productRepository.findAll();
+     public List<ProductDTO> findAllProducts() {
+     return productRepository.findAll()
+             .stream().map(product ->  convertToDTO(product))
+             .collect(Collectors.toList());
      }
 
      @Override
-     public Product findProductById(Long id) {
-          Optional<Product> productOpt = productRepository.findById(id);
-          if (productOpt.isPresent()) {
-               return productOpt.get();
-          }
-          throw new EntityNotFoundException("El producto con el id " + id + " no existe");
+     public ProductDTO findProductById(Long id) {
+          return productRepository.findById(id)
+                  .map(product ->  convertToDTO(product))
+                  .orElseThrow(() -> new EntityNotFoundException("El producto con el id " + id + " no existe"));
      }
 
      @Override
