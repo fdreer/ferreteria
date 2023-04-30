@@ -64,6 +64,12 @@ public class ProductServiceImpl implements IProductService {
      }
 
      @Override
+     public Product findProductModelById(Long id) {
+          return productRepository.findById(id)
+                  .orElseThrow(() -> new EntityNotFoundException("El producto con el id " + id + " no existe"));
+     }
+
+     @Override
      public void deleteProductById(Long id) {
           findProductById(id);
           productRepository.deleteById(id);

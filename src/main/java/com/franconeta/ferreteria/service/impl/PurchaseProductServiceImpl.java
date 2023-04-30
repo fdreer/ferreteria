@@ -1,15 +1,17 @@
 package com.franconeta.ferreteria.service.impl;
 
+import com.franconeta.ferreteria.dto.PurchaseProductDTO;
 import com.franconeta.ferreteria.model.Product;
 import com.franconeta.ferreteria.model.PurchaseProduct;
 import com.franconeta.ferreteria.repository.PurchaseProductRepository;
 import com.franconeta.ferreteria.service.IProductService;
 import com.franconeta.ferreteria.service.IPurchaseProductService;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class PurchaseProductServiceImpl implements IPurchaseProductService {
@@ -19,27 +21,42 @@ public class PurchaseProductServiceImpl implements IPurchaseProductService {
      @Autowired
      private IProductService productService;
 
-     @Override
-     public PurchaseProduct createPurchaseProduct(PurchaseProduct p) {
-          Product product = productService.findProductById(p.getProduct().getId());
-          p.setProduct(product);
-          return purchaseProductRepository.save(p);
+     private PurchaseProductDTO convertToDTO(PurchaseProduct purchaseProduct) {
+          return new PurchaseProductDTO(
+                  purchaseProduct.getId(),
+                  purchaseProduct.getProduct().getName(),
+                  purchaseProduct.getPrice(),
+                  purchaseProduct.getUnits(),
+                  purchaseProduct.getPrice() * purchaseProduct.getUnits(),
+                  purchaseProduct.getReceived()
+          );
      }
 
      @Override
-     public PurchaseProduct updatePurchaseProduct(PurchaseProduct p) {
+     public PurchaseProductDTO createPurchaseProduct(PurchaseProduct purchaseProduct) {
+          Product product = productService.findProductModelById(purchaseProduct.getProduct().getId());
+          purchaseProduct.setProduct(product);
+          PurchaseProduct productSave = purchaseProductRepository.save(purchaseProduct);
+          return convertToDTO(productSave);
+     }
+
+     @Override
+     public PurchaseProductDTO updatePurchaseProduct(PurchaseProduct p) {
           return createPurchaseProduct(p);
      }
 
      @Override
-     public List<PurchaseProduct> findAllPurchaseProducts() {
-          return purchaseProductRepository.findAll();
+     public List<PurchaseProductDTO> findAllPurchaseProducts() {
+          return purchaseProductRepository.findAll()
+                  .stream().map(purchaseProduct -> convertToDTO(purchaseProduct))
+                  .collect(Collectors.toList());
      }
 
      @Override
-     public PurchaseProduct findPurchaseProductById(Long id) {
-          Optional<PurchaseProduct> product = purchaseProductRepository.findById(id);
-          return product.get();
+     public PurchaseProductDTO findPurchaseProductById(Long id) {
+          return purchaseProductRepository.findById(id)
+                  .map(purchaseProduct -> convertToDTO(purchaseProduct))
+                  .orElseThrow(() -> new EntityNotFoundException("La orden de compra con el id " + id + " no existe"));
      }
 
      @Override

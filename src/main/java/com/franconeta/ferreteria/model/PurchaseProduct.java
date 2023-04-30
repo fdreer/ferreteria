@@ -12,13 +12,11 @@ import lombok.Setter;
 public class PurchaseProduct {
      @Id
      @GeneratedValue(strategy = GenerationType.IDENTITY)
-     @Column(name = "id")
      private Long id;
 
      @ManyToOne
      @JoinColumn(name = "product_id")
      private Product product;
-
      private Double price;
      private Integer units;
      private Boolean received;
