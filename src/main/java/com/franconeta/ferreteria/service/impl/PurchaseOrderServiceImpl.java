@@ -1,5 +1,7 @@
 package com.franconeta.ferreteria.service.impl;
 
+import com.franconeta.ferreteria.dto.PurchaseOrderDTO;
+import com.franconeta.ferreteria.dto.PurchaseProductDTO;
 import com.franconeta.ferreteria.model.Provider;
 import com.franconeta.ferreteria.model.PurchaseOrder;
 import com.franconeta.ferreteria.model.PurchaseProduct;
@@ -7,13 +9,12 @@ import com.franconeta.ferreteria.repository.PurchaseOrderRepository;
 import com.franconeta.ferreteria.service.IProviderService;
 import com.franconeta.ferreteria.service.IPurchaseOrderService;
 import com.franconeta.ferreteria.service.IPurchaseProductService;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class PurchaseOrderServiceImpl implements IPurchaseOrderService {
@@ -26,43 +27,76 @@ public class PurchaseOrderServiceImpl implements IPurchaseOrderService {
      private IProviderService providerService;
 
      @Override
-     public PurchaseOrder createPurchaseOrder(PurchaseOrder p) {
-          Set<PurchaseProduct> products = p.getPurchaseProducts();
-          Set<PurchaseProduct> productsToSave = new HashSet<>();
+     public PurchaseOrderDTO createPurchaseOrder(PurchaseOrder p) {
+          List<PurchaseProduct> productsToSave = p.getPurchaseProducts()
+                  .stream()
+                  .map(purchaseProduct -> purchaseProductService.findPurchaseProductModelById(purchaseProduct.getId()))
+                  .toList();
 
-          for (PurchaseProduct product : products) {
-               PurchaseProduct productFind = purchaseProductService.findPurchaseProductById(product.getId());
-               productsToSave.add(productFind);
-          }
-          Provider providerFind = providerService.findProviderById(p.getProvider().getId());
+          Provider providerFind = providerService.findProviderModelById(p.getProvider().getId());
 
           p.setPurchaseProducts(productsToSave);
           p.setProvider(providerFind);
-          return purchaseOrderRepository.save(p);
+
+          PurchaseOrder purchaseOrderSave = purchaseOrderRepository.save(p);
+          return convertToDTO(purchaseOrderSave);
+     }
+
+     private PurchaseOrderDTO convertToDTO(PurchaseOrder purchaseOrder) {
+          List<PurchaseProductDTO> listToDTO = purchaseOrder.getPurchaseProducts()
+                  .stream().map(purchaseProduct -> convertToDTOPurchaseProduct(purchaseProduct)).toList();
+
+          Double totalPrice = listToDTO.stream().mapToDouble(PurchaseProductDTO::getTotalPrice).sum();
+          return new PurchaseOrderDTO(
+                  purchaseOrder.getId(),
+                  listToDTO,
+                  totalPrice,
+                  purchaseOrder.getProvider().getName()
+          );
+     }
+
+     private PurchaseProductDTO convertToDTOPurchaseProduct(PurchaseProduct purchaseProduct) {
+          return new PurchaseProductDTO(
+                  purchaseProduct.getId(),
+                  purchaseProduct.getProduct().getName(),
+                  purchaseProduct.getPrice(),
+                  purchaseProduct.getUnits(),
+                  purchaseProduct.getPrice() * purchaseProduct.getUnits(),
+                  purchaseProduct.getReceived()
+          );
      }
 
      @Override
-     public PurchaseOrder updatePurchaseOrder(PurchaseOrder p) {
-          return this.createPurchaseOrder(p);
+     public PurchaseOrderDTO updatePurchaseOrder(PurchaseOrder p) {
+          return createPurchaseOrder(p);
      }
 
      @Override
-     public PurchaseOrder addProductToPurchaseOrder(String purchaseOrderId, String purchaseProductId) {
-          PurchaseOrder purchaseOrder = findPurchaseOrderById(Long.parseLong(purchaseOrderId));
-          PurchaseProduct purchaseProduct = purchaseProductService.findPurchaseProductById(Long.parseLong(purchaseProductId));
+     public PurchaseOrderDTO addProductToPurchaseOrder(String purchaseOrderId, String purchaseProductId) {
+          PurchaseOrder purchaseOrder = findPurchaseOrderModelById(Long.parseLong(purchaseOrderId));
+          PurchaseProduct purchaseProduct = purchaseProductService.findPurchaseProductModelById(Long.parseLong(purchaseProductId));
           purchaseOrder.getPurchaseProducts().add(purchaseProduct);
-          return purchaseOrderRepository.save(purchaseOrder);
+          return convertToDTO(purchaseOrderRepository.save(purchaseOrder));
      }
 
      @Override
-     public List<PurchaseOrder> findAllPurchaseOrders() {
-          return purchaseOrderRepository.findAll();
+     public List<PurchaseOrderDTO> findAllPurchaseOrders() {
+          return purchaseOrderRepository.findAll()
+                  .stream().map(purchaseOrder -> convertToDTO(purchaseOrder))
+                  .collect(Collectors.toList());
      }
 
      @Override
-     public PurchaseOrder findPurchaseOrderById(Long id) {
-          Optional<PurchaseOrder> purchaseOrderOPT = purchaseOrderRepository.findById(id);
-          return purchaseOrderOPT.get();
+     public PurchaseOrderDTO findPurchaseOrderById(Long id) {
+          return purchaseOrderRepository.findById(id)
+                  .map(purchaseOrder -> convertToDTO(purchaseOrder))
+                  .orElseThrow(() -> new EntityNotFoundException("La orden de compra con id " + id + "no existe"));
+     }
+
+     @Override
+     public PurchaseOrder findPurchaseOrderModelById(Long id) {
+          return purchaseOrderRepository.findById(id)
+                  .orElseThrow(() -> new EntityNotFoundException("La orden de compra con id " + id + "no existe"));
      }
 
      @Override

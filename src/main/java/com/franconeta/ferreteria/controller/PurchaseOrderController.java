@@ -1,5 +1,6 @@
 package com.franconeta.ferreteria.controller;
 
+import com.franconeta.ferreteria.dto.PurchaseOrderDTO;
 import com.franconeta.ferreteria.model.PurchaseOrder;
 import com.franconeta.ferreteria.service.IPurchaseOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,34 +17,34 @@ public class PurchaseOrderController {
      private IPurchaseOrderService purchaseOrderService;
 
      @PostMapping
-     public ResponseEntity<PurchaseOrder> createPurchaseOrder(@RequestBody PurchaseOrder p) {
-          PurchaseOrder purchaseOrder = purchaseOrderService.createPurchaseOrder(p);
+     public ResponseEntity<PurchaseOrderDTO> createPurchaseOrder(@RequestBody PurchaseOrder p) {
+          PurchaseOrderDTO purchaseOrder = purchaseOrderService.createPurchaseOrder(p);
           return new ResponseEntity<>(purchaseOrder, HttpStatus.CREATED);
      }
 
      @GetMapping("/{id}")
-     public ResponseEntity<PurchaseOrder> getPurchaseOrder(@PathVariable Long id) {
-          PurchaseOrder purchaseOrder = purchaseOrderService.findPurchaseOrderById(id);
+     public ResponseEntity<PurchaseOrderDTO> getPurchaseOrder(@PathVariable Long id) {
+          PurchaseOrderDTO purchaseOrder = purchaseOrderService.findPurchaseOrderById(id);
           return new ResponseEntity<>(purchaseOrder, HttpStatus.OK);
      }
 
      @GetMapping
-     public ResponseEntity<List<PurchaseOrder>> getAllPurchaseOrders() {
-          List<PurchaseOrder> purchaseOrderList = purchaseOrderService.findAllPurchaseOrders();
+     public ResponseEntity<List<PurchaseOrderDTO>> getAllPurchaseOrders() {
+          List<PurchaseOrderDTO> purchaseOrderList = purchaseOrderService.findAllPurchaseOrders();
           return new ResponseEntity<>(purchaseOrderList, HttpStatus.OK);
      }
 
      @PutMapping
-     public ResponseEntity<PurchaseOrder> updatePurchaseOrder(@RequestBody PurchaseOrder p) {
-          PurchaseOrder purchaseOrder = purchaseOrderService.updatePurchaseOrder(p);
+     public ResponseEntity<PurchaseOrderDTO> updatePurchaseOrder(@RequestBody PurchaseOrder p) {
+          PurchaseOrderDTO purchaseOrder = purchaseOrderService.updatePurchaseOrder(p);
           return new ResponseEntity<>(purchaseOrder, HttpStatus.OK);
      }
 
      @PutMapping("/add-product")
-     public ResponseEntity<PurchaseOrder> addProductToPurchaseOrder (
+     public ResponseEntity<PurchaseOrderDTO> addProductToPurchaseOrder (
              @RequestParam String purchaseOrderId,
              @RequestParam String purchaseProductId) {
-          PurchaseOrder purchaseOrder = purchaseOrderService.addProductToPurchaseOrder(purchaseOrderId, purchaseProductId);
+          PurchaseOrderDTO purchaseOrder = purchaseOrderService.addProductToPurchaseOrder(purchaseOrderId, purchaseProductId);
           return new ResponseEntity<>(purchaseOrder, HttpStatus.OK);
      }
 

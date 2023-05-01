@@ -60,6 +60,12 @@ public class PurchaseProductServiceImpl implements IPurchaseProductService {
      }
 
      @Override
+     public PurchaseProduct findPurchaseProductModelById(Long id) {
+          return purchaseProductRepository.findById(id)
+                  .orElseThrow(() -> new EntityNotFoundException("La orden de compra con el id " + id + " no existe"));
+     }
+
+     @Override
      public void deletePurchaseProductById(Long id) {
           purchaseProductRepository.deleteById(id);
      }

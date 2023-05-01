@@ -10,5 +10,6 @@ public interface IPurchaseProductService {
      PurchaseProductDTO updatePurchaseProduct(PurchaseProduct p);
      List<PurchaseProductDTO> findAllPurchaseProducts();
      PurchaseProductDTO findPurchaseProductById(Long id);
+     PurchaseProduct findPurchaseProductModelById(Long id);
      void deletePurchaseProductById(Long id);
 }
