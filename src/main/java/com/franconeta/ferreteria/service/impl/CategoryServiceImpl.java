@@ -6,13 +6,14 @@ import com.franconeta.ferreteria.repository.CategoryRepository;
 import com.franconeta.ferreteria.service.ICategoryService;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Service
+@Service @AllArgsConstructor
 public class CategoryServiceImpl implements ICategoryService {
 
      @Autowired
